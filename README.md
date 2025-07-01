@@ -81,7 +81,8 @@ Hệ thống triển khai một quy trình xử lý mật khẩu nhiều lớp �
 ## Giao diện người dùng
 ## Ảnh chụp màn hình
 
-<img src="https://github.com/ngocminhkien/BTL-ATBMTT-nh-m-8-/blob/main/images/dn.gif?raw=true" alt="Giao diện Đăng nhập" width="600" />
-<img src="https://github.com/ngocminhkien/BTL-ATBMTT-nh-m-8-/blob/main/images/dk.gif?raw=true" alt="Giao diện Đăng ký" width="600" />
-<img src="https://github.com/ngocminhkien/BTL-ATBMTT-nh-m-8-/blob/main/images/user.gif?raw=true" alt="Giao diện Người dùng" width="600" />
-<img src="https://github.com/ngocminhkien/BTL-ATBMTT-nh-m-8-/blob/main/images/am.gif?raw=true" alt="Giao diện Quản trị viên" width="600" />
+<img src="![image](https://github.com/user-attachments/assets/a66866e1-54ba-41df-8785-7613a9bc0629)
+" alt="Giao diện Đăng nhập" width="600" />
+<img src="=" alt="Giao diện Đăng ký" width="600" />
+<img src="=" alt="Giao diện Người dùng" width="600" />
+<img src="=" alt="Giao diện Quản trị viên" width="600" />
