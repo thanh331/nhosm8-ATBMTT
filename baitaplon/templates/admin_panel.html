@@ -1,0 +1,438 @@
+<!-- File: BAITAPLON/templates/admin_panel.html -->
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bảng Quản Trị Viên</title>
+    <style>
+        /* CSS CHUNG ĐƯỢC COPY TỪ INDEX.HTML (CÓ THỂ TÁCH RA FILE RIÊNG NẾU MUỐN) */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 900px; /* Admin panel rộng hơn một chút */
+            box-sizing: border-box;
+        }
+        h1, h2 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        input[type="text"],
+        input[type="password"],
+        select {
+            width: calc(100% - 22px);
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .message {
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            font-weight: bold;
+            text-align: center;
+        }
+        .message.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .message.info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        hr {
+            border: 0;
+            height: 1px;
+            background: #eee;
+            margin: 30px 0;
+        }
+        .user-info {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.1em;
+            color: #555;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        .button-group button {
+            flex-grow: 1;
+            min-width: 120px;
+        }
+        .logout-btn {
+            background-color: #e74c3c;
+        }
+        .logout-btn:hover {
+            background-color: #c0392b;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+            color: #333;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .admin-action-form {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .admin-action-form select,
+        .admin-action-form input[type="text"],
+        .admin-action-form input[type="password"] {
+            flex-grow: 1;
+            min-width: 100px;
+        }
+        .admin-action-form button {
+            width: auto;
+            min-width: 80px;
+        }
+        .action-cell {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+            align-items: center; /* Căn giữa các item theo chiều dọc */
+        }
+        .action-cell button {
+            width: auto;
+            padding: 8px 12px;
+            font-size: 0.9em;
+        }
+        .admin-controls-section {
+            background-color: #fdfdfd;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px dashed #ccc;
+            margin-top: 25px;
+        }
+        .locked-account {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+        .unlocked-account {
+            color: #2ecc71;
+        }
+        .unlock-btn {
+            background-color: #3498db; /* Blue color for unlock */
+        }
+        .unlock-btn:hover {
+            background-color: #2980b9;
+        }
+
+        /* CSS cho Tabs */
+        .tab-buttons {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #eee;
+        }
+        .tab-button {
+            padding: 10px 20px;
+            cursor: pointer;
+            border: none;
+            background-color: #f0f0f0;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+            margin-right: 5px;
+            font-weight: bold;
+            color: #555;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        .tab-button.active {
+            background-color: #3498db;
+            color: white;
+            border-bottom: 2px solid #3498db; /* Highlight active tab */
+        }
+        .tab-button:hover:not(.active) {
+            background-color: #e0e0e0;
+        }
+        .tab-content {
+            display: none; /* Mặc định ẩn tất cả tab content */
+        }
+        .tab-content.active {
+            display: block; /* Hiển thị tab content đang active */
+        }
+
+        /* CSS cho cột mật khẩu ẩn/hiện */
+        .decrypted-hash-column {
+            display: none; /* Mặc định ẩn */
+        }
+        .decrypted-hash-column.visible {
+            display: table-cell; /* Hiển thị khi có class 'visible' */
+        }
+        .decrypted-hash-header {
+            display: none; /* Mặc định ẩn tiêu đề */
+        }
+        .decrypted-hash-header.visible {
+            display: table-cell; /* Hiển thị khi có class 'visible' */
+        }
+        .show-password-toggle {
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Bảng Quản Trị Viên</h1>
+
+        {# Flash messages từ Flask #}
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="messages">
+                    {% for category, message in messages %}
+                        <div class="message {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <div class="user-info">
+            Xin chào, <strong>{{ current_user }}</strong>! Bạn là: <strong>{{ current_role }}</strong>.
+            <div class="button-group">
+                {# Đã xóa nút "Trở về Bảng điều khiển người dùng" #}
+                <button class="logout-btn" onclick="window.location.href='/logout'">Đăng Xuất</button>
+            </div>
+        </div>
+
+        <hr>
+
+        <div class="tab-buttons">
+            <button class="tab-button active" onclick="showTab('userListSection', this)">Danh sách người dùng</button>
+            <button class="tab-button" onclick="showTab('loginHistorySection', this)">Lịch sử đăng nhập</button>
+        </div>
+
+        {# Phần Danh sách người dùng #}
+        <div id="userListSection" class="tab-content active">
+            <h3>Thêm người dùng mới</h3>
+            <form action="/admin_action" method="POST">
+                <input type="hidden" name="action" value="add_user">
+                <div class="form-group">
+                    <label for="new_username_admin">Tên đăng nhập:</label>
+                    <input type="text" id="new_username_admin" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="new_password_admin">Mật khẩu:</label>
+                    <input type="password" id="new_password_admin" name="password" required>
+                </div>
+                <div class="form-group">
+                    <label for="new_role_admin">Vai trò:</label>
+                    <select id="new_role_admin" name="role">
+                        <option value="user">User</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+                <button type="submit">Thêm người dùng</button>
+            </form>
+
+            <hr>
+
+            <h3>Danh sách người dùng hiện có</h3>
+            <div class="show-password-toggle">
+                <input type="checkbox" id="toggleDecryptedHash">
+                <label for="toggleDecryptedHash">Hiển thị Hash đã giải mã (Cảnh báo: Rủi ro bảo mật)</label>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Tên đăng nhập</th>
+                        <th>Vai trò</th>
+                        <th>Trạng thái</th>
+                        <th>Ngày tạo</th>
+                        <th class="decrypted-hash-header">Hash đã giải mã</th> {# Thêm tiêu đề cột mới #}
+                        <th>Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users_list %}
+                        <tr>
+                            <td>{{ user.id }}</td>
+                            <td>{{ user.username }}</td>
+                            <td>{{ user.role }}</td>
+                            <td>
+                                {% if user.is_locked == 1 %}
+                                    <span class="locked-account">Đã khóa ({{ user.failed_login_attempts }} lần sai)</span>
+                                {% else %}
+                                    <span class="unlocked-account">Hoạt động ({{ user.failed_login_attempts }} lần sai)</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ user.created_at }}</td>
+                            <td class="decrypted-hash-column">{{ user.decrypted_hash }}</td> {# Hiển thị hash đã giải mã #}
+                            <td class="action-cell">
+                                <form action="/admin_action" method="POST" style="display:inline-block;">
+                                    <input type="hidden" name="action" value="reset_password">
+                                    <input type="hidden" name="user_id" value="{{ user.id }}">
+                                    <input type="password" name="password" placeholder="Mật khẩu mới" required style="width:120px;">
+                                    <button type="submit" style="background-color:#f39c12;">Reset Mật khẩu</button>
+                                </form>
+                                <form action="/admin_action" method="POST" style="display:inline-block;">
+                                    <input type="hidden" name="action" value="change_role">
+                                    <input type="hidden" name="user_id" value="{{ user.id }}">
+                                    <select name="role" style="width:80px;">
+                                        <option value="user" {% if user.role == 'user' %}selected{% endif %}>User</option>
+                                        <option value="admin" {% if user.role == 'admin' %}selected{% endif %}>Admin</option>
+                                    </select>
+                                    <button type="submit" style="background-color:#2ecc71;">Đổi Vai trò</button>
+                                </form>
+                                {# Thêm nút mở khóa TÀI KHOẢN BỊ KHÓA #}
+                                {% if user.is_locked == 1 %}
+                                    <form action="/admin_action" method="POST" style="display:inline-block;">
+                                        <input type="hidden" name="action" value="unlock_account">
+                                        <input type="hidden" name="user_id" value="{{ user.id }}">
+                                        <button type="submit" class="unlock-btn">Mở khóa</button>
+                                    </form>
+                                {% endif %}
+                                {# Không cho admin tự xóa tài khoản của mình #}
+                                {% if user.username != current_user %}
+                                    <form action="/admin_action" method="POST" style="display:inline-block;">
+                                        <input type="hidden" name="action" value="delete_user">
+                                        <input type="hidden" name="user_id" value="{{ user.id }}">
+                                        <button type="submit" style="background-color:#e74c3c;">Xóa</button>
+                                    </form>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {# Phần Lịch sử đăng nhập #}
+        <div id="loginHistorySection" class="tab-content">
+            <h3>Lịch sử đăng nhập</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID Log</th>
+                        <th>Tên đăng nhập</th>
+                        <th>Thời gian</th>
+                        <th>Trạng thái</th>
+                        <th>Địa chỉ IP</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in login_logs %}
+                        <tr>
+                            <td>{{ log.id }}</td>
+                            <td>{{ log.username }}</td>
+                            <td>{{ log.timestamp }}</td>
+                            <td>{{ log.status }}</td>
+                            <td>{{ log.ip_address if log.ip_address else 'N/A' }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        function showTab(tabId, clickedButton) {
+            // Ẩn tất cả các tab content
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(content => {
+                content.classList.remove('active');
+            });
+
+            // Loại bỏ class 'active' khỏi tất cả các nút tab
+            const tabButtons = document.querySelectorAll('.tab-button');
+            tabButtons.forEach(button => {
+                button.classList.remove('active');
+            });
+
+            // Hiển thị tab content được chọn
+            document.getElementById(tabId).classList.add('active');
+            // Thêm class 'active' cho nút đã click
+            clickedButton.classList.add('active');
+        }
+
+        // Mặc định hiển thị tab "Danh sách người dùng" khi tải trang
+        document.addEventListener('DOMContentLoaded', function() {
+            showTab('userListSection', document.querySelector('.tab-button'));
+
+            // Logic ẩn/hiện cột hash đã giải mã
+            const toggleCheckbox = document.getElementById('toggleDecryptedHash');
+            const decryptedHashColumns = document.querySelectorAll('.decrypted-hash-column');
+            const decryptedHashHeader = document.querySelector('.decrypted-hash-header');
+
+            toggleCheckbox.addEventListener('change', function() {
+                if (this.checked) {
+                    decryptedHashHeader.classList.add('visible');
+                    decryptedHashColumns.forEach(col => {
+                        col.classList.add('visible');
+                    });
+                } else {
+                    decryptedHashHeader.classList.remove('visible');
+                    decryptedHashColumns.forEach(col => {
+                        col.classList.remove('visible');
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

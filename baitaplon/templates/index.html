@@ -1,0 +1,253 @@
+<!-- File: BAITAPLON/templates/index.html -->
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng nhập / Đăng ký</title>
+    <style>
+        /* CSS CHUNG CHO CÁC TRANG */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+            box-sizing: border-box;
+        }
+        h1, h2 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        input[type="text"],
+        input[type="password"],
+        select {
+            width: calc(100% - 22px);
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .message {
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            font-weight: bold;
+            text-align: center;
+        }
+        .message.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .message.info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        hr {
+            border: 0;
+            height: 1px;
+            background: #eee;
+            margin: 30px 0;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        .button-group button {
+            flex-grow: 1;
+            min-width: 120px;
+        }
+        .logout-btn {
+            background-color: #e74c3c;
+        }
+        .logout-btn:hover {
+            background-color: #c0392b;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+            color: #333;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .action-cell {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+        .action-cell button {
+            width: auto;
+            padding: 8px 12px;
+            font-size: 0.9em;
+        }
+        /* CSS MỚI ĐỂ ẨN/HIỆN FORM */
+        .hidden {
+            display: none;
+        }
+        .toggle-link {
+            text-align: center;
+            margin-top: 15px;
+        }
+        .toggle-link a {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+        .toggle-link a:hover {
+            color: #2980b9;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Bảo mật mật khẩu với SHA và Python Flask</h1>
+
+        {# Flash messages từ Flask #}
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="messages">
+                    {% for category, message in messages %}
+                        <div class="message {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <div id="loginForm">
+            <h2>Đăng nhập</h2>
+            <form action="/login" method="POST">
+                <div class="form-group">
+                    <label for="login_username">Tên đăng nhập:</label>
+                    <input type="text" id="login_username" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="login_password">Mật khẩu:</label>
+                    <input type="password" id="login_password" name="password" required>
+                </div>
+                <div class="form-group">
+                    <label for="role_type">Đăng nhập với vai trò:</label>
+                    <select id="role_type" name="role_type">
+                        <option value="user">Người dùng</option>
+                        <option value="admin">Quản trị viên</option>
+                    </select>
+                </div>
+                <button type="submit">Đăng nhập</button>
+            </form>
+            <div class="toggle-link">
+                <p>Bạn chưa có tài khoản? <a href="#" onclick="showRegisterForm(); return false;">Đăng ký ngay!</a></p>
+            </div>
+        </div>
+
+        <div id="registerForm" class="hidden">
+            <h2>Đăng ký</h2>
+            <p>Tài khoản đăng ký mặc định là <strong>Người dùng</strong>.</p>
+            <form action="/register" method="POST">
+                <div class="form-group">
+                    <label for="register_username">Tên đăng nhập:</label>
+                    <input type="text" id="register_username" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="register_password">Mật khẩu:</label>
+                    <input type="password" id="register_password" name="password" required>
+                </div>
+                <button type="submit">Đăng ký</button>
+            </form>
+            <div class="toggle-link">
+                <p>Đã có tài khoản? <a href="#" onclick="showLoginForm(); return false;">Đăng nhập!</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Hàm để hiển thị form đăng nhập và ẩn form đăng ký
+        function showLoginForm() {
+            document.getElementById('loginForm').classList.remove('hidden');
+            document.getElementById('registerForm').classList.add('hidden');
+        }
+
+        // Hàm để hiển thị form đăng ký và ẩn form đăng nhập
+        function showRegisterForm() {
+            document.getElementById('loginForm').classList.add('hidden');
+            document.getElementById('registerForm').classList.remove('hidden');
+        }
+
+        // Khi trang tải, kiểm tra xem có thông báo lỗi/thành công liên quan đến đăng ký không
+        // Nếu có, hiển thị form đăng ký thay vì form đăng nhập mặc định
+        document.addEventListener('DOMContentLoaded', function() {
+            const messages = document.querySelectorAll('.message');
+            let showRegisterOnLoad = false;
+            messages.forEach(msg => {
+                // Nếu có tin nhắn từ /register, giả định người dùng vừa cố gắng đăng ký
+                if (msg.textContent.includes('Đăng ký thành công') || msg.textContent.includes('Tên đăng nhập đã tồn tại')) {
+                    showRegisterOnLoad = true;
+                }
+            });
+
+            if (showRegisterOnLoad) {
+                showRegisterForm();
+            } else {
+                showLoginForm(); // Mặc định hiển thị form đăng nhập
+            }
+        });
+    </script>
+</body>
+</html>

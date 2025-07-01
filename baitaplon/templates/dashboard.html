@@ -1,0 +1,337 @@
+<!--  BAITAPLON/templates/dashboard.html-->
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bảng điều khiển người dùng</title>
+    <style>
+        /* CSS CHUNG ĐƯỢC COPY TỪ INDEX.HTML (CÓ THỂ TÁCH RA FILE RIÊNG NẾU MUỐN) */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 800px;
+            box-sizing: border-box;
+        }
+        h1, h2 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        input[type="text"],
+        input[type="password"],
+        input[type="date"], /* Thêm kiểu date */
+        input[type="tel"], /* Thêm kiểu tel */
+        select {
+            width: calc(100% - 22px);
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .message {
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            font-weight: bold;
+            text-align: center;
+        }
+        .message.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .message.info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        hr {
+            border: 0;
+            height: 1px;
+            background: #eee;
+            margin: 30px 0;
+        }
+        .user-info {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.1em;
+            color: #555;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        .button-group button {
+            flex-grow: 1;
+            min-width: 120px;
+            /* Thêm CSS cho nút active */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Thêm bóng nhẹ */
+        }
+        .button-group button.active {
+            background-color: #2980b9; /* Màu nền đậm hơn khi active */
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.3); /* Bóng chìm khi active */
+            transform: translateY(1px); /* Hiệu ứng nhấn nút */
+        }
+        .logout-btn {
+            background-color: #e74c3c;
+        }
+        .logout-btn:hover {
+            background-color: #c0392b;
+        }
+        /* CSS MỚI ĐỂ ẨN/HIỆN FORM VÀ HIỆU ỨNG FADE */
+        .hidden {
+            display: none;
+        }
+        .profile-details,
+        #editProfileForm,
+        #changePasswordForm {
+            opacity: 0; /* Mặc định ẩn với opacity 0 */
+            transition: opacity 0.3s ease-in-out; /* Thêm transition cho hiệu ứng mờ dần */
+            display: block; /* Ban đầu display block để transition hoạt động */
+            pointer-events: none; /* Ngăn chặn tương tác khi ẩn */
+            height: 0; /* Ẩn chiều cao để không chiếm không gian */
+            overflow: hidden; /* Ẩn nội dung tràn */
+            padding: 0 20px; /* Reset padding để không ảnh hưởng height:0 */
+            margin: 0; /* Reset margin */
+        }
+        .profile-details.visible,
+        #editProfileForm.visible,
+        #changePasswordForm.visible {
+            opacity: 1; /* Hiển thị với opacity 1 */
+            pointer-events: auto; /* Cho phép tương tác */
+            height: auto; /* Chiều cao tự động */
+            padding: 20px; /* Padding bình thường */
+            margin-top: 20px; /* Margin bình thường */
+        }
+        .profile-details {
+            background-color: #f9f9f9;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+        }
+        .profile-details p {
+            margin-bottom: 10px;
+            font-size: 1.05em;
+        }
+        .profile-details p strong {
+            color: #2c3e50;
+            display: inline-block;
+            width: 120px; /* Căn chỉnh các nhãn */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Bảng điều khiển người dùng</h1>
+
+        {# Flash messages từ Flask #}
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="messages">
+                    {% for category, message in messages %}
+                        <div class="message {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <div class="user-info">
+            Xin chào, <strong>{{ current_user }}</strong>! Bạn là: <strong>{{ current_role }}</strong>.
+            <div class="button-group">
+                <button id="btnViewProfileInfo" onclick="toggleForm('viewProfileInfo', this);">Xem thông tin cá nhân</button>
+                <button id="btnEditProfileForm" onclick="toggleForm('editProfileForm', this);">Sửa thông tin người dùng</button>
+                <button id="btnChangePasswordForm" onclick="toggleForm('changePasswordForm', this);">Đổi Mật Khẩu</button>
+                <button class="logout-btn" onclick="window.location.href='/logout'">Đăng Xuất</button>
+            </div>
+        </div>
+
+        <hr>
+
+        {# Phần Xem thông tin cá nhân #}
+        <div id="viewProfileInfo" class="profile-details">
+            <h2>Thông tin cá nhân của bạn</h2>
+            <p><strong>Họ và tên:</strong> {{ user_info.full_name if user_info.full_name else 'Chưa cập nhật' }}</p>
+            <p><strong>Ngày sinh:</strong> {{ user_info.date_of_birth if user_info.date_of_birth else 'Chưa cập nhật' }}</p>
+            <p><strong>Địa chỉ:</strong> {{ user_info.address if user_info.address else 'Chưa cập nhật' }}</p>
+            <p><strong>Số điện thoại:</strong> {{ user_info.phone_number if user_info.phone_number else 'Chưa cập nhật' }}</p>
+            <p><strong>Tên đăng nhập:</strong> {{ user_info.username }}</p>
+            <p><strong>Vai trò:</strong> {{ user_info.role }}</p>
+        </div>
+
+        {# Phần Sửa thông tin người dùng #}
+        <div id="editProfileForm">
+            <h2>Sửa thông tin cá nhân</h2>
+            <form action="/update_profile" method="POST">
+                <div class="form-group">
+                    <label for="full_name">Họ và tên:</label>
+                    <input type="text" id="full_name" name="full_name" value="{{ user_info.full_name if user_info.full_name else '' }}">
+                </div>
+                <div class="form-group">
+                    <label for="date_of_birth">Ngày sinh:</label>
+                    <input type="date" id="date_of_birth" name="date_of_birth" value="{{ user_info.date_of_birth if user_info.date_of_birth else '' }}">
+                </div>
+                <div class="form-group">
+                    <label for="address">Địa chỉ:</label>
+                    <input type="text" id="address" name="address" value="{{ user_info.address if user_info.address else '' }}">
+                </div>
+                <div class="form-group">
+                    <label for="phone_number">Số điện thoại:</label>
+                    <input type="tel" id="phone_number" name="phone_number" value="{{ user_info.phone_number if user_info.phone_number else '' }}">
+                </div>
+                <button type="submit">Cập nhật thông tin</button>
+            </form>
+        </div>
+
+        {# Phần Đổi mật khẩu #}
+        <div id="changePasswordForm">
+            <h2>Đổi Mật Khẩu</h2>
+            <form action="/change_password" method="POST">
+                <div class="form-group">
+                    <label for="old_password">Mật khẩu cũ:</label>
+                    <input type="password" id="old_password" name="old_password" required>
+                </div>
+                <div class="form-group">
+                    <label for="new_password">Mật khẩu mới:</label>
+                    <input type="password" id="new_password" name="new_password" required>
+                </div>
+                <div class="form-group">
+                    <label for="confirm_new_password">Xác nhận mật khẩu mới:</label>
+                    <input type="password" id="confirm_new_password" name="confirm_new_password" required>
+                </div>
+                <button type="submit">Đổi Mật Khẩu</button>
+            </form>
+        </div>
+
+
+        <script>
+            // JS để toggle form với hiệu ứng fade
+            function toggleForm(formIdToShow, clickedButton) {
+                const forms = ['viewProfileInfo', 'editProfileForm', 'changePasswordForm'];
+                const buttons = document.querySelectorAll('.button-group button');
+
+                // Xóa class 'active' khỏi tất cả các nút
+                buttons.forEach(btn => {
+                    btn.classList.remove('active');
+                });
+
+                // Thêm class 'active' cho nút vừa click (trừ nút Đăng Xuất)
+                if (clickedButton && !clickedButton.classList.contains('logout-btn')) {
+                    clickedButton.classList.add('active');
+                }
+
+                forms.forEach(id => {
+                    const formElement = document.getElementById(id);
+                    if (formElement) {
+                        if (id === formIdToShow) {
+                            // Nếu form đang ẩn, hiển thị nó với hiệu ứng fade-in
+                            if (formElement.classList.contains('hidden')) {
+                                formElement.classList.remove('hidden');
+                                setTimeout(() => {
+                                    formElement.classList.add('visible');
+                                }, 10); // Một độ trễ nhỏ để CSS transition hoạt động
+                            } else {
+                                // Nếu form đang hiển thị, ẩn nó với hiệu ứng fade-out
+                                formElement.classList.remove('visible');
+                                setTimeout(() => {
+                                    formElement.classList.add('hidden');
+                                }, 300); // Đợi transition kết thúc (0.3s) trước khi ẩn hoàn toàn
+                            }
+                        } else {
+                            // Ẩn các form khác
+                            formElement.classList.remove('visible');
+                            setTimeout(() => {
+                                formElement.classList.add('hidden');
+                            }, 300); // Đợi transition kết thúc trước khi ẩn hoàn toàn
+                        }
+                    }
+                });
+            }
+
+            document.addEventListener('DOMContentLoaded', function() {
+                const messages = document.querySelectorAll('.message.error, .message.success');
+                let formToShowOnLoad = null;
+
+                messages.forEach(msg => {
+                    const text = msg.textContent;
+                    if (text.includes('Mật khẩu cũ không đúng') ||
+                        text.includes('Mật khẩu đã được thay đổi') ||
+                        text.includes('Mật khẩu mới và xác nhận mật khẩu không khớp') ||
+                        text.includes('Vui lòng điền đầy đủ các trường mật khẩu')) {
+                        formToShowOnLoad = 'changePasswordForm';
+                    }
+                    if (text.includes('Thông tin cá nhân đã được cập nhật') ||
+                        text.includes('lỗi khi cập nhật thông tin')) {
+                        formToShowOnLoad = 'editProfileForm';
+                    }
+                });
+
+                if (formToShowOnLoad) {
+                    const formElement = document.getElementById(formToShowOnLoad);
+                    if (formElement) {
+                        formElement.classList.remove('hidden');
+                        setTimeout(() => {
+                            formElement.classList.add('visible');
+                        }, 10); // Độ trễ nhỏ để hiệu ứng fade-in hoạt động
+                        
+                        // Đặt nút tương ứng là active
+                        const buttonId = `btn${formToShowOnLoad.charAt(0).toUpperCase() + formToShowOnLoad.slice(1)}`;
+                        const activeButton = document.getElementById(buttonId);
+                        if (activeButton) {
+                            activeButton.classList.add('active');
+                        }
+                    }
+                } else {
+                    // Mặc định hiển thị thông tin cá nhân khi tải trang nếu không có tin nhắn flash
+                    toggleForm('viewProfileInfo', document.getElementById('btnViewProfileInfo'));
+                }
+            });
+        </script>
+    </div>
+</body>
+</html>
