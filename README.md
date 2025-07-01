@@ -84,5 +84,5 @@ Hệ thống triển khai một quy trình xử lý mật khẩu nhiều lớp �
 <img src="![image](https://github.com/user-attachments/assets/a66866e1-54ba-41df-8785-7613a9bc0629)
 " alt="Giao diện Đăng nhập" width="600" />
 <img src="screenshot_1751365277.png" alt="Giao diện Đăng ký" width="600" />
-<img src="=" alt="Giao diện Người dùng" width="600" />
+<img src="screenshot_1751365291.png" alt="Giao diện Người dùng" width="600" />
 <img src="=" alt="Giao diện Quản trị viên" width="600" />
